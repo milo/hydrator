@@ -1,0 +1,23 @@
+{
+	"name": "milo/hydrator",
+	"type": "library",
+	"description": "Hydrates object from array, exports object to array",
+	"license": ["MIT", "GPLv2", "GPLv3"],
+	"authors": [
+		{
+			"name": "Miloslav Hůla",
+			"email": "miloslav.hula@gmail.com",
+			"homepage": "https://github.com/milo"
+		}
+	],
+	"require": {
+		"php": ">=5.6.0"
+	},
+	"require-dev": {
+		"nette/tester": "~2.0"
+	},
+	"autoload": {
+		"classmap": ["src/Hydrator/"]
+	},
+	"minimum-stability": "dev"
+}
