@@ -2,15 +2,7 @@
 
 
 
-# Installation
-Use [Composer](https://getcomposer.org/):
-```
-composer require milo/hydrator
-```
-
-
-
-# Quick Start
+# Usage
 ```php
 class Person
 {
@@ -66,6 +58,11 @@ It manipulates with public properties of class. It makes type check according to
  Type checking is strict which means, integer cannot be cast to string or vice versa even it would be possible.
 
 Implement [`Milo\Hydrator\IHydratorBackend`](src/Hydrator/IHydratorBackend.php) for your own backend.
+
+
+
+# Installation
+Use [Composer](https://getcomposer.org/): `composer require milo/hydrator`
 
 
 
