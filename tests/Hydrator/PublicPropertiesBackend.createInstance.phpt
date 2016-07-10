@@ -19,6 +19,17 @@ class ClassWithConstructor
 
 $backend = new PublicPropertiesBackend;
 
-$o = $backend->createInstance(ClassWithConstructor::class, ['arg']);
-Assert::type(ClassWithConstructor::class, $o);
-Assert::same('arg', $o->arg);
+# Numerical keys for constructor
+test(function () use ($backend) {
+	$o = $backend->createInstance(ClassWithConstructor::class, ['arg']);
+	Assert::type(ClassWithConstructor::class, $o);
+	Assert::same('arg', $o->arg);
+});
+
+
+# String keys for constructor
+test(function () use ($backend) {
+	$o = $backend->createInstance(ClassWithConstructor::class, ['arg' => 'arg']);
+	Assert::type(ClassWithConstructor::class, $o);
+	Assert::same('arg', $o->arg);
+});

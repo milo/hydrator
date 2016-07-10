@@ -30,7 +30,7 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 	 */
 	public function createInstance($class, array $args = [])
 	{
-		return new $class(...$args);
+		return new $class(...array_values($args));
 	}
 
 
