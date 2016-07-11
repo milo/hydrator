@@ -123,3 +123,19 @@ test(function () use ($hydrator) {
 		$hydrator->hydrate(C10::class, ['a' => 1]);
 	}, Hydrator\Backend\InvalidClassException::class, 'Class name must not be empty.');
 });
+
+
+# Hydrate into created object
+test(function () use ($hydrator) {
+	class C11
+	{
+		/** @var int */
+		public $a;
+	}
+
+	$object1 = new C11;
+	$object2 = $hydrator->hydrate($object1, ['a' => 1]);
+
+	Assert::same($object1, $object2);
+	Assert::same(1, $object2->a);
+});

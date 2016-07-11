@@ -21,7 +21,7 @@ class Hydrator
 
 
 	/**
-	 * @param  string
+	 * @param  string|object
 	 * @param  array
 	 * @param  array
 	 * @return mixed
@@ -31,11 +31,18 @@ class Hydrator
 	{
 		$this->path = $path;
 
-		$object = $this->backend->createInstance($class, $data);
-		if (!$object instanceof $class) {
-			$type = is_object($object) ? get_class($object) : gettype($object);
-			throw new InvalidClassInstanceException(get_class($this->backend) . "::createInstance() returned '$type' but '$class' expected.");
+		if (is_object($class)) {
+			$object = $class;
+			$class = get_class($object);
+
+		} else {
+			$object = $this->backend->createInstance($class, $data);
+			if (!$object instanceof $class) {
+				$type = is_object($object) ? get_class($object) : gettype($object);
+				throw new InvalidClassInstanceException(get_class($this->backend) . "::createInstance() returned '$type' but '$class' expected.");
+			}
 		}
+
 
 		foreach ($this->backend->getProperties($class) as $property) {
 			$this->path[] = "[$property]";
