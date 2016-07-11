@@ -15,8 +15,8 @@ class Person
 	/** @var string|NULL */
 	public $email;
 
-	/** @var Address */
-	public $address;
+	/** @var Address[] */
+	public $addresses;
 }
 
 class Address
@@ -28,8 +28,9 @@ class Address
 $data = [
 	'name' => 'Miloslav',
 	'surname' => 'Hůla',
-	'address' => [
-		'city' => 'Prague',
+	'addresses' => [
+		['city' => 'Prague'],
+		['city' => 'Roztoky'],
 	],
 ];
 
