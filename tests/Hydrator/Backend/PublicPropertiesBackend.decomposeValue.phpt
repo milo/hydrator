@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/../bootstrap.php';
+require __DIR__ . '/../../bootstrap.php';
 
 use Milo\Hydrator\Backend\PublicPropertiesBackend;
 use Tester\Assert;
