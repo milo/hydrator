@@ -150,4 +150,32 @@ class Helpers
 		return $res;
 	}
 
+
+	/**
+	 * Returns array of file names which class depends on.
+	 * @param  string
+	 * @return array
+	 */
+	public static function getClassDependentFiles($class)
+	{
+		$files = [];
+
+		$reflections = [new \ReflectionClass($class)];
+		while (count($reflections)) {
+			/** @var \ReflectionClass $rc */
+			$rc = array_shift($reflections);
+			$files[$rc->getFileName()] = 1;
+
+			if ($rpc = $rc->getParentClass()) {
+				$reflections[] = $rpc;
+			}
+
+			foreach ($rc->getTraits() as $rt) {
+				$reflections[] = $rt;
+			}
+		}
+
+		return array_keys($files);
+	}
+
 }
