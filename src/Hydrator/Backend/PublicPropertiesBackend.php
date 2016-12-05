@@ -18,9 +18,30 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 {
 	use Hydrator\Strict;
 
-	private $propertiesCache = [];
+	/** @var ICache */
+	private $cache;
 
-	private $typesCache = [];
+	/** @var array */
+	private $flushCache = [];
+
+	/** @var array */
+	private $runtimeCache = [];
+
+
+	public function __construct(ICache $cache = NULL)
+	{
+		$this->cache = $cache;
+	}
+
+
+	public function __destruct()
+	{
+		if ($this->cache && $this->flushCache) {
+			foreach ($this->flushCache as $class) {
+				$this->cache->save($class, $this->runtimeCache[$class], Helpers::getClassDependentFiles($class));
+			}
+		}
+	}
 
 
 	/**
@@ -40,10 +61,8 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 	 */
 	public function getProperties($class)
 	{
-		$properties = & $this->propertiesCache[$class];
-		if ($properties === NULL) {
+		return $this->cacheLoad($class, 'properties', function () use ($class) {
 			$properties = [];
-
 			$rc = new ReflectionClass($class);
 			foreach ($rc->getProperties(ReflectionProperty::IS_PUBLIC) as $rp) {
 				if ($rp->isStatic()) {
@@ -51,9 +70,8 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 				}
 				$properties[] = $rp->getName();
 			}
-		}
-
-		return $properties;
+			return $properties;
+		});
 	}
 
 
@@ -65,8 +83,7 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 	 */
 	public function getPropertyTypes($class, $property)
 	{
-		$types = & $this->typesCache["$class::$property"];
-		if ($types === NULL) {
+		return $this->cacheLoad($class, "types-of-$property", function () use ($class, $property) {
 			$rp = new ReflectionProperty($class, $property);
 
 			preg_match_all('#@var\s+([^\s*]+)#mi', $rp->getDocComment(), $matches, PREG_SET_ORDER);
@@ -95,9 +112,9 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 
 				$types[] = $type;
 			}
-		}
 
-		return $types;
+			return $types;
+		});
 	}
 
 
@@ -222,6 +239,27 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 			default:
 				return FALSE;
 		}
+	}
+
+
+	/**
+	 * @param  string
+	 * @param  string
+	 * @param  callable
+	 * @return mixed
+	 */
+	private function cacheLoad($class, $key, callable $loader)
+	{
+		if ($this->cache && !isset($this->runtimeCache[$class])) {
+			$this->runtimeCache[$class] = $this->cache->load($class) ?: [];
+		}
+
+		if (isset($this->runtimeCache[$class][$key])) {
+			return $this->runtimeCache[$class][$key];
+		}
+
+		$this->flushCache[$class] = $class;
+		return $this->runtimeCache[$class][$key] = $loader();
 	}
 
 }
