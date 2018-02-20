@@ -2,7 +2,7 @@
 	"name": "milo/hydrator",
 	"type": "library",
 	"description": "Hydrates object from array, exports object to array",
-	"license": ["MIT", "GPLv2", "GPLv3"],
+	"license": ["MIT", "GPL-2.0-only", "GPL-3.0-only"],
 	"authors": [
 		{
 			"name": "Miloslav Hůla",
