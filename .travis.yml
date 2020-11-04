@@ -4,12 +4,23 @@ php:
     - 5.6
     - 7.0
     - 7.1
+    - 7.2
+    - 7.3
+    - 7.4
+    - 8.0snapshot
 
-before_script:
-    - composer install --no-interaction --prefer-source
+install:
+    - travis_retry composer install --no-progress --prefer-dist
 
-script: vendor/bin/tester -p php -s tests
+script:
+    - vendor/bin/tester -p php -s tests
 
 after_failure:
     # Print *.actual content
     - for i in $(find tests -name \*.actual); do echo "--- $i"; cat $i; echo; echo; done
+
+dist: bionic
+
+cache:
+    directories:
+        - $HOME/.composer/cache
