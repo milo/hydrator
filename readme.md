@@ -54,7 +54,8 @@ There is only one backend for now.
 
 
 ### [`PublicPropertiesBackend`](src/Hydrator/Backend/PublicPropertiesBackend.php)
-It manipulates with public properties of class. It makes type check according to `@var` annotation.
+It manipulates with public properties of class.
+ It takes property type when present since PHP 7.4 and/or it makes type check according to `@var` annotation.
  Type string has to be in piped format (e.g. `int|string|NULL`).
  Type checking is strict which means, integer cannot be cast to string or vice versa even it would be possible.
 

@@ -86,12 +86,54 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 		return $this->cacheLoad($class, "types-of-$property", function () use ($class, $property) {
 			$rp = new ReflectionProperty($class, $property);
 
-			preg_match_all('#@var\s+([^\s*]+)#mi', $rp->getDocComment(), $matches, PREG_SET_ORDER);
-			$matchCount = count($matches);
-			if ($matchCount === 0) {
+			if (PHP_VERSION_ID >= 70400 && ($rt = $rp->getType())) {
+				$name = $rt->getName();
+
+				# For arrays, find all type[] annotations
+				if ($name === 'array') {
+					$types = [];
+					$matches = self::parseVarAnnotation($rp->getDocComment(), $class, $property);
+					foreach (explode('|', $matches[0][1]) as $typeStr) {
+						if (substr($typeStr, -2) !== '[]') {
+							continue;
+						}
+
+						$type = new Type;
+						do {
+							$type->dimensionCount++;
+							$typeStr = substr($typeStr, 0, -2);
+						} while (substr($typeStr, -2) === '[]');
+
+						$lower = strtolower($typeStr);
+						$type->isNullable = $rt->allowsNull();
+						$type->isBuiltin = Type::isBuiltin($lower);
+						$type->name = $type->isBuiltin
+							? $lower
+							: Helpers::expandClassName($typeStr, $rp->getDeclaringClass());
+
+						$types[] = $type;
+					}
+
+					if (count($types)) {
+						return $types;
+					}
+				}
+
+				if ($name === 'self' || $name === 'static') {
+					$name = $rp->getDeclaringClass()->name;
+				}
+
+				$type = new Type;
+				$type->name = $name;
+				$type->isNullable = $rt->allowsNull();
+				$type->isBuiltin = Type::isBuiltin($name);
+
+				return [$type];
+			}
+
+			$matches = self::parseVarAnnotation($rp->getDocComment(), $class, $property);
+			if (count($matches) === 0) {
 				throw new InvalidAnnotationException("Missing @var annotation for $class::\$$property property.");
-			} elseif ($matchCount !== 1) {
-				throw new InvalidAnnotationException("Multiple @var annotations for $class::\$$property property. Exactly one required.");
 			}
 
 			$types = [];
@@ -260,6 +302,22 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 
 		$this->flushCache[$class] = $class;
 		return $this->runtimeCache[$class][$key] = $loader();
+	}
+
+
+	/**
+	 * @param  string $str
+	 * @param  string $class
+	 * @param  string $property
+	 * @return array
+	 */
+	private static function parseVarAnnotation($str, $class, $property)
+	{
+		preg_match_all('#@var\s+([^\s*]+)#mi', $str, $matches, PREG_SET_ORDER);
+		if (count($matches) > 1) {
+			throw new InvalidAnnotationException("Multiple @var annotations for $class::\$$property property. Exactly one required.");
+		}
+		return $matches;
 	}
 
 }
