@@ -35,13 +35,13 @@ class D3
 
 Assert::exception(function () use ($hydrator) {
 	$hydrator->hydrate(D1::class, [
-		'int' => NULL,
+		'int' => null,
 	]);
 }, Hydrator\InvalidValueException::class, 'The D1::$int requires data of int type, but $data[int] contains NULL.');
 
 Assert::exception(function () use ($hydrator) {
 	$hydrator->hydrate(D1::class, [
-		'int' => TRUE,
+		'int' => true,
 	]);
 }, Hydrator\InvalidValueException::class, 'The D1::$int requires data of int type, but $data[int] contains TRUE.');
 

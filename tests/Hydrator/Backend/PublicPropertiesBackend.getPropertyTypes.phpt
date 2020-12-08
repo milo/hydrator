@@ -39,10 +39,10 @@ $backend = new PublicPropertiesBackend;
 
 Assert::equal([
 	typeFactory('int'),
-	typeFactory('float', TRUE, 1),
+	typeFactory('float', true, 1),
 	typeFactory('mixed'),
-	typeFactory('null', TRUE, 0, TRUE),
-	typeFactory('ClassWithTypes', FALSE),
+	typeFactory('null', true, 0, true),
+	typeFactory('ClassWithTypes', false),
 ], $backend->getPropertyTypes(ClassWithTypes::class, 'a'));
 
 Assert::equal([
@@ -62,5 +62,5 @@ Assert::exception(function () use ($backend) {
 }, Milo\Hydrator\Backend\InvalidAnnotationException::class, 'Missing @var annotation for ClassWithTypes::$e property.');
 
 Assert::equal([
-	typeFactory('null', TRUE, 0, TRUE),
+	typeFactory('null', true, 0, true),
 ], $backend->getPropertyTypes(ClassWithTypes::class, 't'));

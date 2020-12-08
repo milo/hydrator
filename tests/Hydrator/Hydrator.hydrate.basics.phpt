@@ -34,10 +34,10 @@ test(function () use ($hydrator) {
 	$expected = new C1;
 	$expected->int1 = 1;
 	$expected->int2 = 2;
-	$expected->null = NULL;
-	$expected->nullSet = NULL;
+	$expected->null = null;
+	$expected->nullSet = null;
 
-	Assert::equal($expected, $hydrator->hydrate(C1::class, ['int1' => 1, 'int2' => 2, 'nullSet' => NULL]));
+	Assert::equal($expected, $hydrator->hydrate(C1::class, ['int1' => 1, 'int2' => 2, 'nullSet' => null]));
 });
 
 

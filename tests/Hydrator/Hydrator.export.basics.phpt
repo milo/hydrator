@@ -33,8 +33,8 @@ test(function () use ($hydrator) {
 	$actual = new E1;
 	$actual->int1 = 1;
 	$actual->int2 = 2;
-	$actual->null = NULL;
-	$actual->nullSet = NULL;
+	$actual->null = null;
+	$actual->nullSet = null;
 
 	Assert::equal([
 		'int1' => 1,
@@ -110,6 +110,6 @@ test(function () use ($hydrator) {
 	$o3 = new E5;
 	$o3->a = [1, 2.0];
 	Assert::exception(function () use ($hydrator, $o3) {
-		$hydrator->export($o3, NULL, ['$o3']);
+		$hydrator->export($o3, null, ['$o3']);
 	}, Hydrator\ExportException::class, 'Cannot export $o3 value array. It cannot be decomposed to E4[]|E3[]|float[]|int[] type.');
 });

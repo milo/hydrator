@@ -13,7 +13,7 @@ interface ICache
 	 * @param  array
 	 * @return void
 	 */
-	function save($key, $value, array $dependentFiles = NULL);
+	function save($key, $value, array $dependentFiles = null);
 
 
 	/**

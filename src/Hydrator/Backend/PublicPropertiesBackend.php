@@ -28,7 +28,7 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 	private $runtimeCache = [];
 
 
-	public function __construct(ICache $cache = NULL)
+	public function __construct(ICache $cache = null)
 	{
 		$this->cache = $cache;
 	}
@@ -131,21 +131,21 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 
 		if ($type->name === DateTime::class) {
 			if ($value instanceof DateTime) {
-				return TRUE;
+				return true;
 
 			} elseif (is_numeric($value)) {
 				$value = (new DateTime('@' . $value))->setTimezone(new DateTimeZone(date_default_timezone_get()));
-				return TRUE;
+				return true;
 
 			} elseif (is_string($value)) {
 				try {
 					$value = new DateTime($value);
-					return TRUE;
+					return true;
 				} catch (Exception $e) {
 				}
 			}
 
-			return FALSE;
+			return false;
 		}
 
 		return $value instanceof $type->name;
@@ -168,10 +168,10 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 				? 'Y-m-d H:i:s P'
 				: 'Y-m-d H:i:s T';
 			$value = $value->format($format);
-			return TRUE;
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	}
 
 
@@ -231,13 +231,13 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 				return is_resource($value);
 
 			case 'mixed':
-				return TRUE;
+				return true;
 
 			case 'callable':
 				return is_callable($value);
 
 			default:
-				return FALSE;
+				return false;
 		}
 	}
 

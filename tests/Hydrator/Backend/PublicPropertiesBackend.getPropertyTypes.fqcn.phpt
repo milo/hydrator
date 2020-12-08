@@ -63,34 +63,34 @@ namespace {
 	$backend = new PublicPropertiesBackend;
 
 	Assert::equal([
-		typeFactory(NotNS::class, FALSE),
+		typeFactory(NotNS::class, false),
 	], $backend->getPropertyTypes(NotNS::class, 'prop1'));
 
 	Assert::equal([
-		typeFactory(NotNS::class, FALSE),
+		typeFactory(NotNS::class, false),
 	], $backend->getPropertyTypes(TestNamespace\C::class, 'prop1'));
 
 	Assert::equal([
-		typeFactory(TestNamespace\Deep\C::class, FALSE),
+		typeFactory(TestNamespace\Deep\C::class, false),
 	], $backend->getPropertyTypes(TestNamespace\C::class, 'prop2'));
 
 	Assert::equal([
-		typeFactory(TestNamespace\Deep\C::class, FALSE),
+		typeFactory(TestNamespace\Deep\C::class, false),
 	], $backend->getPropertyTypes(TestNamespace\C::class, 'prop3'));
 
 	Assert::equal([
-		typeFactory(TestNamespace\C::class, FALSE),
+		typeFactory(TestNamespace\C::class, false),
 	], $backend->getPropertyTypes(TestNamespace\C::class, 'prop4'));
 
 	Assert::equal([
-		typeFactory(TestNamespace\C::class, FALSE),
+		typeFactory(TestNamespace\C::class, false),
 	], $backend->getPropertyTypes(TestNamespace\C::class, 'prop5'));
 
 	Assert::equal([
-		typeFactory(TestNamespace\C::class, FALSE),
+		typeFactory(TestNamespace\C::class, false),
 	], $backend->getPropertyTypes(TestNamespace\C::class, 'prop6'));
 
 	Assert::equal([
-		typeFactory(TestNamespace\C::class, FALSE),
+		typeFactory(TestNamespace\C::class, false),
 	], $backend->getPropertyTypes(TestNamespace\C::class, 'prop7'));
 }

@@ -10,7 +10,7 @@ function test(\Closure $cb) {
 	$cb();
 }
 
-function typeFactory($name, $isBuiltin = TRUE, $dimensionCount = 0, $isNullable = FALSE)
+function typeFactory($name, $isBuiltin = true, $dimensionCount = 0, $isNullable = false)
 {
 	$type = new Milo\Hydrator\Type;
 	$type->name = $name;

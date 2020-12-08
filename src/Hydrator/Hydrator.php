@@ -51,7 +51,7 @@ class Hydrator
 			if (!isset($data[$property])) {
 				foreach ($types as $type) {
 					if ($type->isNullable && $type->dimensionCount === 0) {
-						$this->backend->setPropertyValue($object, $property, NULL);
+						$this->backend->setPropertyValue($object, $property, null);
 						array_pop($this->path);
 						continue 2;
 					}
@@ -64,8 +64,8 @@ class Hydrator
 				throw new MissingValueException("Missing " . implode($this->path) . " for $class::\$$property property.");
 			}
 
-			$value = NULL;
-			$success = FALSE;
+			$value = null;
+			$success = false;
 			foreach ($types as $type) {
 				if ($type->isNullable) {
 					continue;
@@ -86,7 +86,7 @@ class Hydrator
 							}
 						}
 						$value = $tmp;
-						$success = TRUE;
+						$success = true;
 						break;
 					}
 
@@ -94,7 +94,7 @@ class Hydrator
 					$tmp = $data[$property];
 					if ($this->tryCompose($type, $tmp)) {
 						$value = $tmp;
-						$success = TRUE;
+						$success = true;
 						break;
 					}
 				}
@@ -120,13 +120,13 @@ class Hydrator
 	 * @return array
 	 * @throws ExportException
 	 */
-	public function export($object, $class = NULL, array $path = ['$object'])
+	public function export($object, $class = null, array $path = ['$object'])
 	{
 		$this->path = $path;
 
 		if (!is_object($object)) {
 			throw new ExportException('Object expected for export but ' . gettype($object) . ' given.');
-		} elseif ($class === NULL) {
+		} elseif ($class === null) {
 			$class = get_class($object);
 		} elseif (!$object instanceof $class) {
 			throw new ExportException("Expected object of $class but " . get_class($object) . " given.");
@@ -138,7 +138,7 @@ class Hydrator
 
 			$types = $this->backend->getPropertyTypes($class, $property);
 			$value = $this->backend->getPropertyValue($object, $property);
-			if ($value === NULL) {
+			if ($value === null) {
 				foreach ($types as $type) {
 					if ($type->isNullable && $type->dimensionCount === 0) {
 						array_pop($this->path);
@@ -149,7 +149,7 @@ class Hydrator
 				throw new ExportException("Value of " . implode('::', $this->path) . " is NULL but $class::\$$property has no nullable type.");
 			}
 
-			$success = FALSE;
+			$success = false;
 			foreach ($types as $type) {
 				if ($type->dimensionCount > 0) {
 					if ($type->dimensionCount > 1) {
@@ -167,12 +167,12 @@ class Hydrator
 						}
 
 						$value = $tmp;
-						$success = TRUE;
+						$success = true;
 						break;
 					}
 				} else {
 					if ($this->tryDecompose($type, $value)) {
-						$success = TRUE;
+						$success = true;
 						break;
 					}
 				}
@@ -208,16 +208,16 @@ class Hydrator
 	private function tryCompose(Type $type, & $data)
 	{
 		if ($this->backend->composeValue($type, $data)) {
-			return TRUE;
+			return true;
 		} elseif (is_array($data) && !$type->isBuiltin) {
 			try {
 				$data = $this->createSelf()->hydrate($type->name, $data, $this->path);
-				return TRUE;
+				return true;
 			} catch (HydrationException $e) {
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 
@@ -230,16 +230,16 @@ class Hydrator
 	private function tryDecompose(Type $type, & $value)
 	{
 		if ($this->backend->decomposeValue($type, $value)) {
-			return TRUE;
+			return true;
 		} elseif (is_object($value) && !$type->isBuiltin) {
 			try {
 				$value = $this->createSelf()->export($value, $type->name, $this->path);
-				return TRUE;
+				return true;
 			} catch (ExportException $e) {
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 
@@ -249,7 +249,7 @@ class Hydrator
 	 */
 	private function toString($value)
 	{
-		if ($value === NULL) {
+		if ($value === null) {
 			return 'NULL';
 		}
 

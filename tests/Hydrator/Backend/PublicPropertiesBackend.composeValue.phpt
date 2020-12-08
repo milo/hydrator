@@ -9,9 +9,9 @@ use Tester\Assert;
 $backend = new PublicPropertiesBackend;
 
 $successCases = [
-	['bool', TRUE],
-	['bool', FALSE],
-	['boolean', TRUE],
+	['bool', true],
+	['bool', false],
+	['boolean', true],
 	['int', -1],
 	['int', 0],
 	['int', 1],
@@ -48,7 +48,7 @@ $objectCases = [
 ];
 foreach ($objectCases as $k => $case) {
 	list($type, $value) = $case;
-	Assert::true($backend->composeValue(typeFactory($type, FALSE), $value), "Key $k");
+	Assert::true($backend->composeValue(typeFactory($type, false), $value), "Key $k");
 	Assert::true($backend->composeValue(typeFactory('mixed'), $value), "Key $k");
 	if (isset($case[2])) {
 		Assert::type($case[2], $value);
@@ -57,35 +57,35 @@ foreach ($objectCases as $k => $case) {
 
 
 $failingCases = [
-	['bool', NULL],
+	['bool', null],
 	['bool', 'TRUE'],
 	['bool', ''],
 	['bool', '0'],
 	['bool', '1'],
-	['int', NULL],
+	['int', null],
 	['int', ''],
 	['int', '0'],
 	['int', '1'],
-	['float', NULL],
+	['float', null],
 	['float', ''],
 	['float', '0.0'],
 	['float', '1.0'],
-	['number', NULL],
+	['number', null],
 	['number', ''],
 	['number', '1'],
 	['number', '1.0'],
-	['string', NULL],
-	['string', TRUE],
+	['string', null],
+	['string', true],
 	['string', []],
 	['string', 0],
 	['string', 0.1],
-	['array', NULL],
-	['resource', NULL],
-	['callable', NULL],
-	['callable', FALSE],
+	['array', null],
+	['resource', null],
+	['callable', null],
+	['callable', false],
 	['stdClass', []],
 	['\stdClass', []],
-	['DateTime', NULL],
+	['DateTime', null],
 	['DateTime', []],
 	['DateTime', '2016-05:31'],
 ];

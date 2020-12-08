@@ -26,7 +26,7 @@ class Helpers
 		if (empty($name)) {
 			throw new InvalidClassException('Class name must not be empty.');
 
-		} elseif (in_array(strtolower($name), ['self', 'static', '$this'], TRUE)) {
+		} elseif (in_array(strtolower($name), ['self', 'static', '$this'], true)) {
 			return $rc->getName();
 
 		} elseif ($name[0] === '\\') {  # already fully qualified
@@ -78,7 +78,7 @@ class Helpers
 	public static function parseUseStatements($code)
 	{
 		$tokens = token_get_all($code);
-		$namespace = $class = $classLevel = $level = NULL;
+		$namespace = $class = $classLevel = $level = null;
 		$res = $uses = [];
 
 		$nameTokens = PHP_VERSION_ID < 80000
@@ -126,7 +126,7 @@ class Helpers
 
 				case '}':
 					if ($level === $classLevel) {
-						$class = $classLevel = NULL;
+						$class = $classLevel = null;
 					}
 					$level--;
 			}
@@ -142,12 +142,12 @@ class Helpers
 	 */
 	private static function fetch(& $tokens, $take)
 	{
-		$res = NULL;
+		$res = null;
 		while ($token = current($tokens)) {
 			list($token, $s) = is_array($token) ? $token : [$token, $token];
-			if (in_array($token, (array) $take, TRUE)) {
+			if (in_array($token, (array) $take, true)) {
 				$res .= $s;
-			} elseif (!in_array($token, [T_DOC_COMMENT, T_WHITESPACE, T_COMMENT], TRUE)) {
+			} elseif (!in_array($token, [T_DOC_COMMENT, T_WHITESPACE, T_COMMENT], true)) {
 				break;
 			}
 			next($tokens);
