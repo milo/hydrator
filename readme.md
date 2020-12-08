@@ -9,14 +9,12 @@ class Person
 	/** @var string */
 	public $name;
 
-	/** @var string */
-	public $surname;
+	public string $surname;
 
-	/** @var string|NULL */
-	public $email;
+	public string|null $email;
 
 	/** @var Address[] */
-	public $addresses;
+	public array $addresses;
 }
 
 class Address
@@ -54,8 +52,9 @@ There is only one backend for now.
 
 
 ### [`PublicPropertiesBackend`](src/Hydrator/Backend/PublicPropertiesBackend.php)
-It manipulates with public properties of class. It makes type check according to `@var` annotation.
- Type string has to be in piped format (e.g. `int|string|NULL`).
+It manipulates with public properties of class.
+ It makes type check according a property type definition or `@var` annotation.
+ Annotation type string has to be in a union format (e.g. `int|string|null`).
  Type checking is strict which means, integer cannot be cast to string or vice versa even it would be possible.
 
 Implement [`Milo\Hydrator\IHydratorBackend`](src/Hydrator/IHydratorBackend.php) for your own backend.
@@ -63,33 +62,32 @@ Implement [`Milo\Hydrator\IHydratorBackend`](src/Hydrator/IHydratorBackend.php) 
 
 
 # Caching
-Implement [`ICache`](src/Hydrator/Backend/ICache.php) and use it with backend. It saves resources associated with
+Implement [`ICache`](src/Hydrator/Backend/ICache.php) and use it with the backend. It saves resources associated with
  classes reflection and FQCN (Fully Qualified Class Name) resolving.
 
 I'm using a simple cache class with [Nette Caching](https://github.com/nette/caching). It looks like:
 ```php
 use Milo\Hydrator;
 use Nette\Caching\Cache;
-use Nette\Caching\IStorage;
+use Nette\Caching\Storage;
 
 
 class HydratorCache implements Hydrator\Backend\ICache
 {
-	/** @var Cache */
-	private $cache;
+	private Cache $cache;
 
 
-	public function __construct(IStorage $storage)
+	public function __construct(Storage $storage)
 	{
 		$this->cache = new Cache($storage, 'milo.hydrator');
 	}
 
 
-	public function save($key, $value, array $dependentFiles = NULL)
+	public function save($key, $value, array $dependentFiles = null)
 	{
 		$dependencies = $dependentFiles
 			? [Cache::FILES => $dependentFiles]
-			: NULL;
+			: null;
 
 		$this->cache->save($key, $value, $dependencies);
 	}

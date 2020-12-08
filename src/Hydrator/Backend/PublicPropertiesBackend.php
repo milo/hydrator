@@ -86,34 +86,50 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 		return $this->cacheLoad($class, "types-of-$property", function () use ($class, $property) {
 			$rp = new ReflectionProperty($class, $property);
 
-			preg_match_all('#@var\s+([^\s*]+)#mi', $rp->getDocComment(), $matches, PREG_SET_ORDER);
-			$matchCount = count($matches);
-			if ($matchCount === 0) {
-				throw new InvalidAnnotationException("Missing @var annotation for $class::\$$property property.");
-			} elseif ($matchCount !== 1) {
-				throw new InvalidAnnotationException("Multiple @var annotations for $class::\$$property property. Exactly one required.");
-			}
+			if (PHP_VERSION_ID >= 70400 && $rp->hasType()) {
+				$types = [];
+				$appendNull = false;
 
-			$types = [];
-			foreach (explode('|', $matches[0][1]) as $typeStr) {
-				$type = new Type;
+				$rt = $rp->getType();
+				$rt = $rt instanceof \ReflectionUnionType
+					? $rt->getTypes()
+					: [$rt];
 
-				while (substr($typeStr, -2) === '[]') {
-					$type->dimensionCount++;
-					$typeStr = substr($typeStr, 0, -2);
+				foreach ($rt as $r) {
+					$name = $r->getName();
+
+					if ($r->allowsNull()) {
+						$appendNull = true;
+						if ($name === 'null') {
+							continue;
+						}
+					}
+
+					if ($r->getName() === 'array' && count($arrayTypes = $this->parseVarAnnotation($rp, true))) {
+						$types = array_merge($types, $arrayTypes);
+						continue;
+					}
+
+					$type = new Type;
+					$type->isBuiltin = Type::isBuiltin($name);
+					$type->isNullable = false;
+					$type->name = $name;
+
+					$types[] = $type;
 				}
 
-				$lower = strtolower($typeStr);
-				$type->isNullable = $lower === 'null';
-				$type->isBuiltin = Type::isBuiltin($lower);
-				$type->name = $type->isBuiltin
-					? $lower
-					: Helpers::expandClassName($typeStr, $rp->getDeclaringClass());
+				if ($appendNull) {
+					$type = new Type;
+					$type->isNullable = true;
+					$type->isBuiltin = true;
+					$type->name = 'null';
+					$types[] = $type;
+				}
 
-				$types[] = $type;
+				return $types;
 			}
 
-			return $types;
+			return $this->parseVarAnnotation($rp);
 		});
 	}
 
@@ -239,6 +255,49 @@ class PublicPropertiesBackend implements Hydrator\IHydratorBackend
 			default:
 				return false;
 		}
+	}
+
+
+
+	private function parseVarAnnotation(\ReflectionProperty $rp, $arraysOnly = false)
+	{
+		preg_match_all('#@var\s+([^\s*]+)#mi', $rp->getDocComment(), $matches, PREG_SET_ORDER);
+		$count = count($matches);
+
+		if ($count < 1) {
+			if ($arraysOnly) {
+				return [];
+			}
+			throw new InvalidAnnotationException("Missing @var annotation for {$rp->getDeclaringClass()->getName()}::\${$rp->getName()} property.");
+
+		} elseif ($count > 1) {
+			throw new InvalidAnnotationException("Multiple @var annotations for {$rp->getDeclaringClass()->getName()}::\${$rp->getName()} property. Exactly one required.");
+		}
+
+		$types = [];
+		foreach (explode('|', $matches[0][1]) as $typeStr) {
+			$type = new Type;
+
+			while (substr($typeStr, -2) === '[]') {
+				$type->dimensionCount++;
+				$typeStr = substr($typeStr, 0, -2);
+			}
+
+			if ($arraysOnly && $type->dimensionCount < 1) {
+				continue;
+			}
+
+			$lower = strtolower($typeStr);
+			$type->isNullable = $lower === 'null';
+			$type->isBuiltin = Type::isBuiltin($lower);
+			$type->name = $type->isBuiltin
+				? $lower
+				: Helpers::expandClassName($typeStr, $rp->getDeclaringClass());
+
+			$types[] = $type;
+		}
+
+		return $types;
 	}
 
 
